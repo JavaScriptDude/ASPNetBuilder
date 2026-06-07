@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Website",
+        "type": "process",
+        "command": "msbuild",
+        "args": [
+          "${workspaceFolder}\\.vscode\\WebSite.targets",
+          "/t:Build",
+          "/nologo",
+          "/v:detailed", /* minimal, normal, detailed, diagnostic */
+          "/p:VirtualPath=/www",
+          "/p:SiteRoot=${workspaceFolder}\\www",
+          "/m:8" /* Enable parallel build with 8 processes, adjust as needed */
+        ],
+        "group": { "kind": "build", "isDefault": true },
+        "problemMatcher": {
+          "owner": "msbuild",
+          "fileLocation": ["relative", "${workspaceFolder}\\www"],
+          "pattern": {
+            "regexp": "^\\s*(?:\\d+>)?(.+?)(\\\\www\\\\)(.+)\\((\\d+)(?:,(\\d+))?\\):\\s+(error|warning)\\s+([\\w\\d]+):\\s+(.+?)(?=\\s+\\[|\\s*$)",
+            "file": 3, "line": 4, "column": 5, "severity": 6, "code": 7, "message": 8
+          }
+        }
+      },
+      {
+        "label": "Rebuild Website",
+        "type": "process",
+        "command": "msbuild",
+        "args": [
+          "${workspaceFolder}\\.vscode\\WebSite.targets",
+          "/t:Rebuild",
+          "/nologo",
+          "/v:normal", /* minimal, normal, detailed, diagnostic */
+          "/p:VirtualPath=/www",
+          "/p:SiteRoot=${workspaceFolder}\\www"
+        ],
+        "group": "build"
+      },
+      {
+        "label": "Clean Website",
+        "type": "process",
+        "command": "msbuild",
+        "args": [
+          "${workspaceFolder}\\.vscode\\WebSite.targets",
+          "/t:Clean",
+          "/nologo",
+          "/v:normal", /* minimal, normal, detailed, diagnostic */ 
+          "/p:VirtualPath=/www",
+          "/p:SiteRoot=${workspaceFolder}\\www"
+        ],
+        "group": "build"
+      },
+      {
+          "label": "Open in Browser",
+          "type": "shell",
+          "command": "start ((Get-Content '${workspaceFolder}\\w.env' -Raw | ConvertFrom-StringData).WEBSITE_URL)",
+          "problemMatcher": []
+      }
+    ]
+  }

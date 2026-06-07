@@ -1,0 +1,43 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <AspNetCompiler>$(windir)\Microsoft.NET\Framework64\v4.0.30319\aspnet_compiler.exe</AspNetCompiler>
+    <SiteRoot>$(MSBuildThisFileDirectory)..\www</SiteRoot>
+    <VirtualPath>/www</VirtualPath>
+    <OutDir Condition="'$(OutDir)'==''">$(MSBuildThisFileDirectory)..\z_tmp</OutDir>
+  </PropertyGroup>
+
+  <!-- Collect all source files as inputs for incremental build tracking -->
+  <ItemGroup>
+    <SourceFiles Include="$(SiteRoot)\**\*.vb" />
+    <SourceFiles Include="$(SiteRoot)\**\*.aspx" />
+    <SourceFiles Include="$(SiteRoot)\**\*.ascx" />
+    <SourceFiles Include="$(SiteRoot)\web.config" />
+    <SourceFiles Include="$(SiteRoot)\**\*.cs" />
+  </ItemGroup>
+
+  <Target Name="Build"
+          Inputs="@(SourceFiles)"
+          Outputs="$(OutDir)\bin\App_Code.compiled">
+    <RemoveDir Directories="$(OutDir)" />
+    <Exec Command='"$(AspNetCompiler)" -v "$(VirtualPath)" -p "$(SiteRoot)" "$(OutDir)"'
+          WorkingDirectory="$(SiteRoot)" />
+    <Error Condition="'$(SiteRoot)' == ''"    Text="SiteRoot is required. Pass it with /p:SiteRoot=..." />
+    <Error Condition="'$(VirtualPath)' == ''" Text="VirtualPath is required. Pass it with /p:VirtualPath=..." />
+  </Target>
+
+  <Target Name="Rebuild">
+    <RemoveDir Directories="$(OutDir)" />
+    <Exec Command='"$(AspNetCompiler)" -v "$(VirtualPath)" -p "$(SiteRoot)" -c "$(OutDir)"'
+          WorkingDirectory="$(SiteRoot)" />
+    <Error Condition="'$(SiteRoot)' == ''"    Text="SiteRoot is required. Pass it with /p:SiteRoot=..." />
+    <Error Condition="'$(VirtualPath)' == ''" Text="VirtualPath is required. Pass it with /p:VirtualPath=..." />
+  </Target>
+
+  <Target Name="Clean">
+    <RemoveDir Directories="$(OutDir)" />
+    <Error Condition="'$(SiteRoot)' == ''"    Text="SiteRoot is required. Pass it with /p:SiteRoot=..." />
+    <Error Condition="'$(VirtualPath)' == ''" Text="VirtualPath is required. Pass it with /p:VirtualPath=..." />
+  </Target>
+
+</Project>
