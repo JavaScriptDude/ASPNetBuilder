@@ -9,11 +9,13 @@
 
   <!-- Collect all source files as inputs for incremental build tracking -->
   <ItemGroup>
+    <SourceFiles Include="$(SiteRoot)\**\*.cs" />
     <SourceFiles Include="$(SiteRoot)\**\*.vb" />
     <SourceFiles Include="$(SiteRoot)\**\*.aspx" />
     <SourceFiles Include="$(SiteRoot)\**\*.ascx" />
     <SourceFiles Include="$(SiteRoot)\web.config" />
-    <SourceFiles Include="$(SiteRoot)\**\*.cs" />
+    <AppCodeFiles Include="$(SiteRoot)\App_Code\**\*.vb" />
+    <AppCodeFiles Include="$(SiteRoot)\App_Code\**\*.cs" />
   </ItemGroup>
 
   <Target Name="Build"
@@ -38,6 +40,20 @@
     <RemoveDir Directories="$(OutDir)" />
     <Error Condition="'$(SiteRoot)' == ''"    Text="SiteRoot is required. Pass it with /p:SiteRoot=..." />
     <Error Condition="'$(VirtualPath)' == ''" Text="VirtualPath is required. Pass it with /p:VirtualPath=..." />
+  </Target>
+
+  <Target Name="BuildAppCode">
+    <MakeDir Directories="$(OutDir)\bin" />
+    <Vbc
+      Sources="@(AppCodeFiles)"
+      TargetType="Library"
+      OutputAssembly="$(OutDir)\bin\App_Code.dll"
+      OptionStrict="Off"
+      OptionExplicit="Off"
+      OptionInfer="On"
+      RootNamespace=""
+      Imports="Microsoft.VisualBasic;System;System.Collections;System.Collections.Generic;System.Linq;System.Web"
+      References="System.dll;System.Core.dll;System.Web.dll;Microsoft.VisualBasic.dll" />
   </Target>
 
 </Project>

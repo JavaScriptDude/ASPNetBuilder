@@ -1,42 +1,48 @@
 {
     "version": "2.0.0",
+    "problemMatcher": [
+      {
+        "owner": "msbuild",
+        "fileLocation": ["relative", "${workspaceFolder}\\www"],
+        "pattern": {
+          "regexp": "^\\s*(?:\\d+>)?(.+?)(\\\\www\\\\)(.+?)\\((\\d+)(?:,(\\d+))?\\):\\s+(error|warning)\\s+([A-Za-z]{2}\\d+):\\s+(.+?)(?:\\s+\\[.*)?$",
+          "file": 3, "line": 4, "column": 5, "severity": 6, "code": 7, "message": 8
+        }
+      }
+    ],
     "tasks": [
       {
         "label": "Build Website",
-        "type": "process",
-        "command": "msbuild",
-        "args": [
-          "${workspaceFolder}\\.vscode\\WebSite.targets",
-          "/t:Build",
-          "/nologo",
-          "/v:detailed", /* minimal, normal, detailed, diagnostic */
-          "/p:VirtualPath=/www",
-          "/p:SiteRoot=${workspaceFolder}\\www",
-          "/m:8" /* Enable parallel build with 8 processes, adjust as needed */
-        ],
+        "type": "shell",
+        "options": { "env": { 
+          "_MSB_T": "Build", /* leave as is */
+          "_MSB_V": "detailed" /* minimal, normal, detailed, diagnostic */
+          } 
+        },
+        "command": "& { $log='${workspaceFolder}\\z_build.log'; if (Test-Path $log) { Remove-Item $log -Force }; msbuild \"${workspaceFolder}\\.vscode\\WebSite.targets\" /nologo /noconlog /t:$env:_MSB_T  /v:$env:_MSB_V \"/flp:logfile=$log;verbosity=detailed;encoding=utf-8;forcenoalign\" \"/p:VirtualPath=/www\" \"/p:SiteRoot=${workspaceFolder}\\www\" /m:8; $code=$LASTEXITCODE; if (Test-Path $log) { Get-Content -Path $log }; exit $code }",
         "group": { "kind": "build", "isDefault": true },
-        "problemMatcher": {
-          "owner": "msbuild",
-          "fileLocation": ["relative", "${workspaceFolder}\\www"],
-          "pattern": {
-            "regexp": "^\\s*(?:\\d+>)?(.+?)(\\\\www\\\\)(.+)\\((\\d+)(?:,(\\d+))?\\):\\s+(error|warning)\\s+([\\w\\d]+):\\s+(.+?)(?=\\s+\\[|\\s*$)",
-            "file": 3, "line": 4, "column": 5, "severity": 6, "code": 7, "message": 8
-          }
-        }
       },
       {
         "label": "Rebuild Website",
-        "type": "process",
-        "command": "msbuild",
-        "args": [
-          "${workspaceFolder}\\.vscode\\WebSite.targets",
-          "/t:Rebuild",
-          "/nologo",
-          "/v:normal", /* minimal, normal, detailed, diagnostic */
-          "/p:VirtualPath=/www",
-          "/p:SiteRoot=${workspaceFolder}\\www"
-        ],
+        "type": "shell",
+        "options": { "env": { 
+          "_MSB_T": "Rebuild", /* leave as is */
+          "_MSB_V": "detailed" /* minimal, normal, detailed, diagnostic */
+          } 
+        },
+        "command": "& { $log='${workspaceFolder}\\z_build.log'; if (Test-Path $log) { Remove-Item $log -Force }; msbuild \"${workspaceFolder}\\.vscode\\WebSite.targets\" /nologo /noconlog /t:$env:_MSB_T  /v:$env:_MSB_V \"/flp:logfile=$log;verbosity=detailed;encoding=utf-8;forcenoalign\" \"/p:VirtualPath=/www\" \"/p:SiteRoot=${workspaceFolder}\\www\" /m:8; $code=$LASTEXITCODE; if (Test-Path $log) { Get-Content -Path $log }; exit $code }",
         "group": "build"
+      },
+      {
+        "label": "Build App_Code",
+        "type": "shell",
+        "options": { "env": { 
+          "_MSB_T": "BuildAppCode", /* leave as is */
+          "_MSB_V": "detailed" /* minimal, normal, detailed, diagnostic */
+          } 
+        },
+        "command": "& { $log='${workspaceFolder}\\z_build.log'; if (Test-Path $log) { Remove-Item $log -Force }; msbuild \"${workspaceFolder}\\.vscode\\WebSite.targets\" /nologo /noconlog /t:$env:_MSB_T  /v:$env:_MSB_V \"/flp:logfile=$log;verbosity=detailed;encoding=utf-8;forcenoalign\" \"/p:VirtualPath=/www\" \"/p:SiteRoot=${workspaceFolder}\\www\" /m:8; $code=$LASTEXITCODE; if (Test-Path $log) { Get-Content -Path $log }; exit $code }",
+        "group": { "kind": "build", "isDefault": false },
       },
       {
         "label": "Clean Website",
@@ -50,7 +56,7 @@
           "/p:VirtualPath=/www",
           "/p:SiteRoot=${workspaceFolder}\\www"
         ],
-        "group": "build"
+        "group": "build",
       },
       {
           "label": "Open in Browser",

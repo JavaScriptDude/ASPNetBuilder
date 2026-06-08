@@ -1,0 +1,5 @@
+{
+  "search.exclude": {
+    "**/z_tmp": true
+  }
+}
